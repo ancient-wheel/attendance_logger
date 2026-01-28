@@ -19,7 +19,7 @@ Backend doesn’t redict between endpoints, so it must be done by frontend.
 Known roles are
 
 | Role | Permission’s level | Description |
-| --- | --- | --- |
+| --- | :---: | --- |
 | Unauthorized user	| 0 | Any user in world wide web |
 | Unconfirmed user | 1 | User after registration, but before the email address in the registration form is confirmed | 
 |Inactive user | 1| User with deactivated account |
@@ -41,13 +41,13 @@ Scheme for endpoints
 ## Main
 
 | Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | --- | 
+| --- | --- | --- | :---: | 
 | GET | `/` | home page | 0+ | 
 
 ## Authentication
 
 | Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | --- | 
+| --- | --- | --- | :---: | 
 | GET | `/auth/registration` | Process user’s registration | 0+ | 
 | POST | `/auth/login` | Process user’s login | 0+ | 
 | GET | `/auth/logout` | Process user’s logout | 2+ | 
@@ -56,7 +56,7 @@ Scheme for endpoints
 ## Users
 
 | Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | --- | 
+| --- | --- | --- | :---: | 
 | GET | `/users` | Request total list of users <br> optional parameters: <ul> <li> **page** for paging the results with 20 items per page </li> </ul> |  | 
 | POST | `/users` | Add new user |  |
 | GET | `/users/<id>` | Show user’s profile for user with ID equal to <id> |  |
@@ -67,7 +67,7 @@ Scheme for endpoints
 ## Clients, contracts and subscriptions
 
 | Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | --- | 
+| --- | --- | --- | :---: | 
 | GET | `/clients` | Request total list of clients <br> optional parameters: <ul> <li> **page** for paging the results with 20 items per page </li> <li> **sort** for sorting results with leading + or – for ascending or descenting order</li> </ul> |  | 
 | GET | `/clients/<id>` | Show client’s profile for client with ID equal to `<id>` |  | 
 | GET | `/clients/<id>/contracts` | Show all contracts of the client `<id>`
@@ -82,7 +82,7 @@ Scheme for endpoints
 ## Groups and lessons
 
 | Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | --- | 
+| --- | --- | --- | :---: | 
 | GET | `/groups` | Request total list of groups <br> optional parameters: <ul> <li> **page** for paging the results with 20 items per page </li> <li> **sort** for sorting results with leading + or – for ascending or descenting order</li> </ul> |  | 
 | POST | `/groups` | Add new group |  | 
 | GET | `/groups/<id>` | Get information about group ID |  | 
@@ -99,7 +99,7 @@ Scheme for endpoints
 Endpoints for settings prices. Head manager and higher role can edit prices.
 
 | Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | --- | 
+| --- | --- | --- | :---: | 
 | GET | `/prices` | Request total list of prices. <br> optional parameters: <ul> <li> **page** for paging the results with 20 items per page </li> <li> **sort** for sorting results with leading + or – for ascending or descenting order</li> </ul> | 0+ | 
 | POST | `/prices` | Add new price | 5+ |
 | PUT | `/prices/<id>` | Edit price `<id>` | 5+ |
@@ -109,7 +109,7 @@ Endpoints for settings prices. Head manager and higher role can edit prices.
 Summary of setup statistics. Employee can view some statistics regarding her/his groups. Manager can see some statistics regarding employees and groups. All statistics are accessable by head manager and higher role.
 
 | Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | --- | 
+| --- | --- | --- | :---: | 
 | GET | `/statistics` | Get main statistics overview | (3+) <br> 5+ |
 | GET | `/statistics/employees` | Get  statistics overview about employees | 4+ |
 | GET | `/statistics/employees/<id>` | Get  statistics overview about employee `<id>` | 3+ |
