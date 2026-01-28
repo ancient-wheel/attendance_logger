@@ -31,7 +31,7 @@ def test_generate_contract_number_user_defined() -> None:
     user_defined = "asdf298ijlnasdhfoe"
     contract = generate_contract_number(user_defined=user_defined)
     assert user_defined == contract
-    
+
 
 def test_convert_native_time_to_aware() -> None:
     datetime_wo_tzinfo = dt.datetime(2025, 10, 15, 18, 20)
@@ -40,4 +40,3 @@ def test_convert_native_time_to_aware() -> None:
     datetime = dt.datetime(2025, 10, 15, 18, 20, tzinfo=dt.UTC)
     print(datetime)
     assert result == datetime
-    
