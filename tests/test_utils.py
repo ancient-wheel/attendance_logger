@@ -1,4 +1,4 @@
-from attendance_logger.utils.tools import (
+from attendance_logger.utils.utils import (
     check_password_hash,
     hash_password,
     generate_contract_number,
