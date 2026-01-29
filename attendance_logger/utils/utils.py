@@ -6,8 +6,9 @@ import datetime as dt
 from email.policy import default as default_policy
 import smtplib
 from email.message import EmailMessage
-import secrets
 from werkzeug.datastructures import MultiDict
+import email_validator
+
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +76,18 @@ def hash_password(password: str) -> str:
     return ph.hash(password)
 
 
+def validate_email(email: str, check_deliverability: bool = False) -> bool:
+    try:
+        email_validator.validate_email(email, check_deliverability=check_deliverability)
+    except email_validator.EmailNotValidError as e:
+        # logger.warning("Email %s failed validation due to %s", email, e)
+        return False
+        error_data["message"]["email"] = "Email failed validation."
+        error_counter += 1
+    else:
+        return True
+
+
 def get_current_utc_datetime() -> dt.datetime:
     """Get current UTC time
 
@@ -117,25 +130,7 @@ def send_email(email_to: str, subject: str, body: str) -> None:
     logger.info("Email sent to %s with subject %s", email_to, subject)
 
 
-def generate_contract_number(user_defined: str = "") -> str:
-    """Generate a contract number
-
-    The results start always with a year followed by slash and a unique combination
-    of 8 ASCII digits.
-
-    Keyword arguments:
-    user_defined: str - user defined contract_number
-
-    Return: str - unique contract number
-    """
-    if len(user_defined) > 0:
-        return user_defined
-    year = dt.date.today().year
-    token = secrets.token_hex(4)
-    return f"{year}/{token}"
-
-
-def convert_native_time_to_aware(datetime: dt.datetime) -> dt.datetime:
+def convert_naive_time_to_aware(datetime: dt.datetime) -> dt.datetime:
     """Convert datetime in native format into aware format by setting timezone
     to UTC timezone.
 
