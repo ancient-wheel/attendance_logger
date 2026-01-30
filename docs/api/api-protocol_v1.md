@@ -7,7 +7,7 @@ date: January 2026
 
 # Introduction
 
-
+I develope this API protocol as a part of my pet project. This web application for logging attendance shell support a children's education club. This club helps families with children with mental and physical disabilities.
 
 # Assumptions
 
@@ -22,7 +22,7 @@ Known roles are
 | --- | :---: | --- |
 | Unauthorized user	| 0 | Any user in world wide web |
 | Unconfirmed user | 1 | User after registration, but before the email address in the registration form is confirmed | 
-|Inactive user | 1| User with deactivated account |
+|Inactive user | 1 | User with deactivated account |
 | User | 2 | User who confirmed its email address |
 | Employee | 3 | A user after an update by head manager or higher role. A employee of the service. |
 | Manager | 4 |	Employee with special rights after an upgrade by head manager or higher role
@@ -36,22 +36,31 @@ Permissions increase from top to buttom.
 
 Scheme for endpoints
     
-    <root>/api/<api-version>/<endpoints>
+    <root>/api/v<api-version>/<endpoints>
+
+This scheme looks like this `<root>/api/v1/<endpoint>` for first vesion of the protocol.
     
 ## Main
 
+> to be defined
+
+Purpose of the main page is not defined and not used yet. Highly likely it shell present general information about the club. 
+
 | Methods | Endpoints | Description | Permissions level |
 | --- | --- | --- | :---: | 
-| GET | `/` | home page | 0+ | 
+| GET | `/` | Show home page. | 0+ | 
 
 ## Authentication
 
+Authentification is basen on "Authentification Bearer" method. Frontend is responcible for logout processG`.
+
 | Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | :---: | 
-| GET | `/auth/registration` | Process user’s registration | 0+ | 
+| --- | --- | --- | :---: |
+| POST | `/auth/register` | Add new user | 0+ | 
 | POST | `/auth/login` | Process user’s login | 0+ | 
 | GET | `/auth/logout` | Process user’s logout | 2+ | 
-| GET | `/auth/confirm_email/<token>` | Confirm email address with a unique <token> | 0+ | 
+| POST | `/auth/confirmation` | Request a confirmation token to specific email | 1+ |
+| GET | `/auth/email/<token>` | Confirm email address with a unique <token> | 0+ |
 
 ## Users
 
@@ -117,3 +126,63 @@ Summary of setup statistics. Employee can view some statistics regarding her/his
 | GET | `/statistics/locations/<id>` | Get  statistics overview about location `<id>` | 5+ |
 | GET | `/statistics/groups` | Get  statistics overview about groups | (3+) <br> 4+ |
 | GET | `/statistics/groups/<id>` | Get  statistics overview about group `<id>` | 3+ |
+
+# Responses
+
+This chapter deals with possible reponses from server.
+
+## Codes in use
+
+Known codes are
+
+<!-- | 201 | Created | Request has led to the creation of a resource | -->
+
+| Status | Message | Description |
+| :---: | --- | --- |
+| 200 | OK | Request has succeeded |
+| 400 | Bad Request | Invalid parameters |
+| 401 | Unauthorized | Lacks valid authentication credentials |
+| 403 | Forbidden | Insufficient permissions to a resource or action |
+
+## Schemes
+
+### Register
+
+#### 200
+
+    {
+        "status": "OK"
+    }
+
+    {
+        "status": "OK"
+        "message": "<string>"
+    }
+
+#### 400
+
+    {
+        "status": "Bad Request", 
+        "messages":
+        {
+            "username": "Username is required.",  // optional
+            "email": "Email failed validation.",  // optional
+            "email": "Email already registered.", // optional
+            "password": "Password must contain at least of 12 and maximum 128 characters."  // optional
+        }
+    }
+
+    {
+        "status": "Bad Request", 
+        "message": "Invalid credentials."
+    }
+
+    {
+        "status": "Bad Request", 
+        "message": "Invalid or expired confirmation token."
+    }
+
+    {
+        "status": "Bad Request", 
+        "message": "Email is already confirmed."
+    }
