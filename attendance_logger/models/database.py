@@ -33,6 +33,7 @@ def init_db() -> None:
         Location,
         UserParticipant,
         ClientParticipant,
+        Favorites,
     )
 
     db.create_all()
@@ -55,6 +56,18 @@ def add_roles():
                 UserRole(
                     name=UserRoles.USER.value,
                     description="Regular user with limited access",
+                )
+            )
+        if (
+            db.session.scalar(
+                db.select(UserRole).where(UserRole.name == UserRoles.EMPLOYEE.value)
+            )
+            is None
+        ):
+            roles.append(
+                UserRole(
+                    name=UserRoles.EMPLOYEE.value,
+                    description="Employee with limited access",
                 )
             )
         if (

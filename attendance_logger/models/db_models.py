@@ -19,9 +19,11 @@ from sqlalchemy import (
 )
 import datetime as dt
 from flask_login import UserMixin
-from attendance_logger.models.database import db, VisitRoles
+from attendance_logger.models.database import db
+from attendance_logger.models.models import VisitRoles
 from attendance_logger import login_manager
 from attendance_logger.utils import utils
+import secrets
 
 
 @login_manager.user_loader
@@ -63,8 +65,8 @@ class UserRole(db.Model):
     __tablename__ = "user_roles"
     id_: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(80), unique=True)
-    description: Mapped[str | None] = mapped_column(String(255))
-    permissions: Mapped[str | None] = mapped_column(String(255))
+    description: Mapped[str | None] = mapped_column(String(256))
+    permissions: Mapped[str | None] = mapped_column(String(256))
 
     def __repr__(self) -> str:
         return f"<Role id_:{self.id_} name:{self.name}>"
@@ -73,9 +75,9 @@ class UserRole(db.Model):
 class User(UserMixin, CreatedAtMixin):
     __tablename__ = "users"
     id_: Mapped[int] = mapped_column(Integer, primary_key=True)
-    username: Mapped[str] = mapped_column(String(100), unique=True)
-    password: Mapped[str] = mapped_column(String(255))
-    email: Mapped[str] = mapped_column(String(255), unique=True)
+    username: Mapped[str] = mapped_column(String(256))
+    password: Mapped[str] = mapped_column(String(256))
+    email: Mapped[str] = mapped_column(String(256), unique=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     confirmed_at_utc: Mapped[dt.datetime | None] = mapped_column(DateTime)
     current_login_at: Mapped[dt.datetime | None] = mapped_column(DateTime)
@@ -86,6 +88,7 @@ class User(UserMixin, CreatedAtMixin):
     roles: Mapped[list[UserRole]] = relationship(secondary=_UserRole_User)
     works: Mapped[list[Teacher]] = relationship(back_populates="user")
     groups: Mapped[list[UserParticipant]] = relationship(back_populates="user")
+    favorites: Mapped[Favorites] = relationship(back_populates="user")
 
     def __repr__(self) -> str:
         return f"<User id_:{self.id_} email:{self.email} active:{self.active} name:{self.username} roles:{[role.name for role in self.roles]}>"
@@ -145,11 +148,12 @@ class Group(CreatedAtMixin):
     lessons: Mapped[list["Lesson"]] = relationship(back_populates="group")
     location_id: Mapped[int] = mapped_column(ForeignKey("locations.id_"))
     location: Mapped[Location | None] = relationship(back_populates="groups")
-    participants: Mapped[list[ClientParticipant]] = relationship(
-        back_populates="group"
-    )
+    participants: Mapped[list[ClientParticipant]] = relationship(back_populates="group")
     schedules: Mapped[list[Schedule]] = relationship(
         secondary=lambda: _group_schedule_table, back_populates="groups"
+    )
+    favorites: Mapped[list[Favorites]] = relationship(
+        secondary=lambda: _favorites_groups, back_populates="groups"
     )
 
     def __repr__(self):
@@ -254,6 +258,9 @@ class Lesson(CreatedAtMixin):
     visitors: Mapped[list[Visitor]] = relationship(back_populates="lesson")
     location_id: Mapped[int] = mapped_column(ForeignKey("locations.id_"))
     location: Mapped[Location | None] = relationship(back_populates="lessons")
+    favorites: Mapped[list[Favorites]] = relationship(
+        secondary=lambda: _favorites_lessons, back_populates="lessons"
+    )
 
     def __repr__(self):
         return f"<Lesson id_:{self.id_} group:{self.group.name} start:{self.start_datetime_utc} state:{self.state}>"
@@ -327,12 +334,31 @@ class EmailConfirmation(CreatedAtMixin):
     id_: Mapped[int] = mapped_column(Integer, primary_key=True)
     email: Mapped[str] = mapped_column(String(256))
     token: Mapped[str] = mapped_column(String(256), unique=True)
-    confirmed_datetime_utc: Mapped[dt.datetime | None] = mapped_column(DateTime)
-    confirmed_timezone: Mapped[int] = mapped_column(Integer)
+    confirmed_at_utc: Mapped[dt.datetime | None] = mapped_column(DateTime)
     expired_datetime_utc: Mapped[dt.datetime] = mapped_column(
         DateTime, default=utils.get_current_utc_datetime_plus_hours(2)
     )
 
-    @property
-    def confirmed_at(self) -> tuple[dt.datetime | None, int]:
-        return self.confirmed_datetime_utc, self.confirmed_timezone
+
+class Favorites(CreatedAtMixin):
+    __tablename__ = "favorites"
+    id_: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id_"), primary_key=True)
+    user: Mapped[User] = relationship(back_populates="favorites")
+    groups: Mapped[list[Group]] = relationship(secondary=lambda: _favorites_groups)
+    lessons: Mapped[list[Lesson]] = relationship(secondary=lambda: _favorites_lessons)
+
+
+_favorites_groups = Table(
+    "_favorites_groups",
+    db.Model.metadata,
+    Column("Favorites", ForeignKey("favorites.id_"), primary_key=True),
+    Column("Group", ForeignKey("groups.id_"), primary_key=True),
+)
+
+_favorites_lessons = Table(
+    "_favorites_lessons",
+    db.Model.metadata,
+    Column("Favorites", ForeignKey("favorites.id_"), primary_key=True),
+    Column("lessons", ForeignKey("lessons.id_"), primary_key=True),
+)
