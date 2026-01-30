@@ -1,9 +1,5 @@
-from flask import current_app as app
 import logging
 import datetime as dt
-from email.policy import default as default_policy
-import smtplib
-from email.message import EmailMessage
 from werkzeug.datastructures import MultiDict
 
 
@@ -26,30 +22,6 @@ def get_current_utc_datetime_plus_hours(hours: int) -> dt.datetime:
     Return: dt.datetime - current UTC time plus specified hours
     """
     return dt.datetime.now(dt.UTC) + dt.timedelta(hours=hours)
-
-
-def send_email(email_to: str, subject: str, body: str) -> None:
-    """Send email (stub function)
-
-    Keyword arguments:
-    email_to: str - recipient email address
-    subject: str - email subject
-    body: str - email body
-    """
-    logger.info("Sending email to %s with subject '%s'", email_to, subject)
-    msg = EmailMessage(policy=default_policy)
-    msg["Subject"] = subject
-    msg["From"] = app.config.get("EMAIL_SENDER")
-    msg["To"] = email_to
-    msg.set_content(body)
-
-    with smtplib.SMTP_SSL(
-        app.config.get("EMAIL_SMTP_SERVER", app.config.get("EMAIL_SMTP_PORT"))
-    ) as smtp:
-        smtp.login(app.config.get("EMAIL_SENDER"), app.config.get("EMAIL_PASSWORD"))
-        smtp.send_message(msg)
-
-    logger.info("Email sent to %s with subject %s", email_to, subject)
 
 
 def convert_naive_time_to_aware(datetime: dt.datetime) -> dt.datetime:
