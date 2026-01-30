@@ -54,15 +54,13 @@ Purpose of the main page is not defined and not used yet. Highly likely it shell
 
 Authentification is basen on "Authentification Bearer" method. Frontend is responcible for logout processG`.
 
-| Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | :---: |
-| POST | `/auth/register` | Add new user | 0+ |
-| POST | `/auth/login` | Process user’s login | 0+ | 
-| GET | `/auth/logout` | Process user’s logout | 2+ | 
-| POST | `/auth/confirmation` | Request a confirmation token to specific email | 1+ |
-| GET | `/auth/email/<token>` | Confirm email address with a unique <token> | 0+ |
-
-| Endpoint | Authentication method | Header's fields | 
+| Methods | Endpoints | JSON fields <br>  * optional fields | Description | Permissions level |
+| --- | --- | --- | --- | :---: |
+| POST | `/auth/register` | <ul> <li> **username**: string</li> <li>**email**: string</li> <li>**password**: string</li> </ul> | Add new user | 0+ |
+| POST | `/auth/login` | <ul> <li> **email**: string</li> <li> **password**: string</li> </ul> | Process user’s login | 0+ | 
+| GET | `/auth/logout`|  | Process user’s logout | 2+ | 
+| POST | `/auth/confirmation` | <ul> <li> **username**: string </li> <li> **email**: string </li> </ul> | Request a confirmation token to specific email | 1+ |
+| GET | `/auth/email/<token>` | | Confirm email address with a unique <token> | 0+ |
 
 ## Users
 
