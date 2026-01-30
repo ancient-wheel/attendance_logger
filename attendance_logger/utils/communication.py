@@ -5,7 +5,7 @@ from email.policy import default as default_policy
 from flask import current_app as app
 
 
-logger = logging.getLoger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def send_email(email_to: str, subject: str, body: str) -> None:

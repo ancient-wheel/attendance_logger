@@ -18,17 +18,9 @@ from sqlalchemy import (
     LargeBinary,
 )
 import datetime as dt
-from flask_login import UserMixin
 from attendance_logger.models.database import db
 from attendance_logger.models.models import VisitRoles
-from attendance_logger import login_manager
 from attendance_logger.utils import utils
-import secrets
-
-
-@login_manager.user_loader
-def load_user(user_id: str) -> User | None:
-    return db.session.get(User, int(user_id))
 
 
 class CreatedAtMixin(db.Model):
@@ -72,7 +64,7 @@ class UserRole(db.Model):
         return f"<Role id_:{self.id_} name:{self.name}>"
 
 
-class User(UserMixin, CreatedAtMixin):
+class User(CreatedAtMixin):
     __tablename__ = "users"
     id_: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String(256))
