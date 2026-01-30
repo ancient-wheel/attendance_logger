@@ -128,7 +128,7 @@ def add_roles():
 
 def add_first_user_as_admin():
     from attendance_logger.models.db_models import User
-    from attendance_logger.utils.utils import hash_password
+    from attendance_logger.utils.auth import hash_password
 
     with app.app_context():
         if db.session.get(User, 1) is None:
