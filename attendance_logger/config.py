@@ -17,6 +17,9 @@ class Config:
     SERVER_NAME = os.environ["SERVER_NAME"]
     SECRET_KEY = os.environ["SECRET_KEY"]
 
+    # Flask JWT extended configuration
+    JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
+
     # Email configuration
     EMAIL_SENDER = os.environ["EMAIL_SENDER"]
     EMAIL_SMTP_SERVER = os.environ["EMAIL_SMTP_SERVER"]

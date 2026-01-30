@@ -155,8 +155,8 @@ Known codes are
     }
 
     {
-        "status": "OK"
-        "message": "<string>"
+        "status": "OK",
+        "access_token": "<string>"
     }
 
 #### 400

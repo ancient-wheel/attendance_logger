@@ -3,10 +3,9 @@ import logging
 from logging.config import dictConfig
 from pathlib import Path
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_jwt_extended import JWTManager
 
-
-LOG_DIR_FILE_PATH = Path(__file__).parent / "logs" / "flask.log"
+LOG_DIR_FILE_PATH = Path(__file__).parent.parent / "logs" / "flask.log"
 LOG_DIR_FILE_PATH.parent.mkdir(exist_ok=True)
 dictConfig(
     {
@@ -44,7 +43,7 @@ dictConfig(
 )
 logger = logging.getLogger(__name__)
 migrate = Migrate()
-login_manager = LoginManager()
+jwt = JWTManager()
 
 
 def create_app() -> Flask:
@@ -60,17 +59,44 @@ def create_app() -> Flask:
 
     db.init_app(app)
     migrate.init_app(app, db)
-    login_manager.init_app(app)
+    jwt.init_app(app)
+
+    from attendance_logger.models.db_models import User
+
+    @jwt.user_identity_loader
+    def user_identity_lookup(user: User) -> str:
+        """Register a callback function that takes whatever object is passed in as the
+        identity when creating JWTs and converts it to a JSON serializable format.
+
+        Keyword arguments:
+        user: User - SQLAlchemy object representing user
+        Return: int - identification of the user
+        """
+
+        return str(user.id_)
+
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data) -> User:
+        """Register a callback function that loads a user from your database whenever
+        a protected route is accessed. This should return any python object on a
+        successful lookup, or None if the lookup failed for any reason (for example
+        if the user has been deleted from the database).
+
+        Keyword arguments:
+        argument -- description
+        Return: return_description
+        """
+
+        identity = jwt_data["sub"]
+        return db.session.scalar(db.select(User).where(User.id_ == identity))
 
     with app.app_context():
         init_db()
         add_roles()
         add_first_user_as_admin()
 
-    from attendance_logger.blueprints.main.routes_v1 import main_pb
-    from attendance_logger.blueprints.auth.routes_v1 import auth_pb
+    from attendance_logger.blueprints.auth import routes_v1
 
-    app.register_blueprint(main_pb, url_prefix="/api/v1")
-    app.register_blueprint(auth_pb, url_prefix="/api/v1")
+    app.register_blueprint(routes_v1.auth_pb)
 
     return app

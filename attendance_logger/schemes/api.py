@@ -5,6 +5,10 @@ class Ok(BaseModel):
     status: str = "OK"
 
 
+class OkAccessToken(Ok):
+    access_token: str
+
+
 class OkWithMessage(Ok):
     message: str
 
