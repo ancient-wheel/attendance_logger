@@ -56,11 +56,13 @@ Authentification is basen on "Authentification Bearer" method. Frontend is respo
 
 | Methods | Endpoints | Description | Permissions level |
 | --- | --- | --- | :---: |
-| POST | `/auth/register` | Add new user | 0+ | 
+| POST | `/auth/register` | Add new user | 0+ |
 | POST | `/auth/login` | Process user’s login | 0+ | 
 | GET | `/auth/logout` | Process user’s logout | 2+ | 
 | POST | `/auth/confirmation` | Request a confirmation token to specific email | 1+ |
 | GET | `/auth/email/<token>` | Confirm email address with a unique <token> | 0+ |
+
+| Endpoint | Authentication method | Header's fields | 
 
 ## Users
 
@@ -146,20 +148,32 @@ Known codes are
 
 ## Schemes
 
-### Register
+Following responses don't depend on endpoint.
 
-#### 200
+`200`
 
     {
         "status": "OK"
     }
+
+`400` 
+
+    {
+        "status": "Bad Request", 
+        "message": "Missing fields."
+    }
+
+### Endpoints *auth*
+
+`200`
+
 
     {
         "status": "OK",
         "access_token": "<string>"
     }
 
-#### 400
+`400`
 
     {
         "status": "Bad Request", 
