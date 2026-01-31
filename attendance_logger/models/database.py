@@ -96,14 +96,14 @@ def add_roles():
             )
         if (
             db.session.scalar(
-                db.select(UserRole).where(UserRole.name == UserRoles.DIRECTOR.value)
+                db.select(UserRole).where(UserRole.name == UserRoles.OWNER.value)
             )
             is None
         ):
             roles.append(
                 UserRole(
-                    name=UserRoles.DIRECTOR.value,
-                    description="Director with high-level access",
+                    name=UserRoles.OWNER.value,
+                    description="Owner of the service with full access",
                 )
             )
         if (
@@ -127,7 +127,7 @@ def add_roles():
 
 
 def add_first_user_as_admin():
-    from attendance_logger.models.db_models import User
+    from attendance_logger.models.db_models import User, UserRole
     from attendance_logger.utils.auth import hash_password
 
     with app.app_context():
@@ -142,6 +142,8 @@ def add_first_user_as_admin():
                 created_timezone=0,
                 confirmed_at_utc=dt.datetime.now(dt.UTC),
             )
+            admin_role = db.session.scalar(db.select(UserRole).where(UserRole.name == "admin"))
+            admin.roles.append(admin_role)
             db.session.add(admin)
             db.session.commit()
             logger.info("Admin is added to user's list.")

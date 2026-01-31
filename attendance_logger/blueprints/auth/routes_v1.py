@@ -273,7 +273,10 @@ def login() -> tuple[dict, int]:
         user.login_count += 1
         user.changed_at = utils.get_current_utc_datetime()
         db.session.commit()
-        access_token = create_access_token(identity=user)
+        access_token = create_access_token(
+            identity=user,
+            additional_claims={"roles": [role.name for role in user.roles]},
+        )
     return responses.OkAccessToken(access_token=access_token).model_dump(), 200
 
 

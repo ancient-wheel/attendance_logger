@@ -3,7 +3,7 @@ from enum import StrEnum, IntEnum
 
 class UserRoles(StrEnum):
     ADMIN = "admin"
-    DIRECTOR = "director"
+    OWNER = "owner"
     HEAD_MANAGER = "head manager"
     MANAGER = "manager"
     EMPLOYEE = "employee"

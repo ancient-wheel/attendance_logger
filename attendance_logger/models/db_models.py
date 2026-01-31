@@ -59,6 +59,9 @@ class UserRole(db.Model):
     name: Mapped[str] = mapped_column(String(80), unique=True)
     description: Mapped[str | None] = mapped_column(String(256))
     permissions: Mapped[str | None] = mapped_column(String(256))
+    users: Mapped[list[User]] = relationship(
+        secondary=_UserRole_User, back_populates="roles"
+    )
 
     def __repr__(self) -> str:
         return f"<Role id_:{self.id_} name:{self.name}>"
