@@ -161,6 +161,13 @@ Following responses don't depend on endpoint.
         "message": "Missing fields."
     }
 
+`403`
+
+    {
+        "status": "Forbidden",
+        "message": "Insufficient Permissions."
+    }
+
 ### Endpoints *auth*
 
 `200`

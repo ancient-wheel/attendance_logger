@@ -23,3 +23,8 @@ class BadRequestWithMessage(BadRequest):
 
 class BadRequestWithMessages(BadRequest):
     messages: dict = {}
+
+
+class Forbidden(BaseModel):
+    status: str = "Forbidden"
+    message: str = "Insufficient Permissions."
