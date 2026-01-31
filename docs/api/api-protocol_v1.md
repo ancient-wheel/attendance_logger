@@ -59,34 +59,36 @@ Authentification is basen on "Authentification Bearer" method. Frontend is respo
 | POST | `/auth/register` | <ul> <li> **username**: string</li> <li>**email**: string</li> <li>**password**: string</li> </ul> | Add new user | 0+ |
 | POST | `/auth/login` | <ul> <li> **email**: string</li> <li> **password**: string</li> </ul> | Process user’s login | 0+ | 
 | GET | `/auth/logout`|  | Process user’s logout | 2+ | 
-| POST | `/auth/confirmation` | <ul> <li> **username**: string </li> <li> **email**: string </li> </ul> | Request a confirmation token to specific email | 1+ |
-| GET | `/auth/email/<token>` | | Confirm email address with a unique <token> | 0+ |
+| POST | `/auth/confirmation` | <ul> <li> **username**: string </li> <li> **email**: string </li> </ul> | Request a link with a token to varify email | 1+ |
+| GET | `/auth/email/<token>` | | Confirm email address with a unique `<token>` | 0+ |
 
 ## Users
 
-| Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | :---: | 
-| GET | `/users` | Request total list of users <br> optional parameters: <ul> <li> **page** for paging the results with 20 items per page </li> </ul> |  | 
-| POST | `/users` | Add new user |  |
-| GET | `/users/<id>` | Show user’s profile for user with ID equal to <id> |  |
-| PUT | `/users/<id>` | Edit user’s profile with user ID equal to `<id>` |  |
-| POST | `/users/<id>/favorities` | Show favorite groups and lessons of the user |  |
-| PUT | `/users/<id>/favorites` | Update favorites groups and lessons |  |
+| Methods | Endpoints | JSON fields <br> * optional fields | Description | Permissions level |
+| ---   | --- | --- | --- | :---: | 
+| GET | `/users` | | Request total list of users <br> optional parameters: <ul> <li> **page** for paging the results with 20 items per page </li> </ul> | 4+ | 
+| POST  | `/users` | <ul> <li> **username**: string </li> <li> **email**: string </li> <li> **password**: string </li> <li> **roles**: string </li> <li> **groups**: list[`<group_id>` *as* integer] </li> </ul> | Add new user | 5+ |
+| GET | `/users/<id>` | | Show profile for user `<id>` | 2+ |
+| PUT | `/users/<id>` | <ul> <li> **user_id**: integer </li> <li> **username**: string </li> <li> **active**: boolean </li> <li> **roles**: string </li> <li> **groups**: list[`<group_id>` *as* integer ] </li>  <li> **favorites**: <br> dict[ <ul> <li> *"lessons"*: list[`<lesson_id>` *as* integer] </li> <li> *"groups"*: list[`<group_id>` *as* integer] </li> </ul> ] </li> </li> </ul> | Edit profile for user `<id>` | 2+ |
+| POST | `/users/<id>/favorities` | <ul> <li> **user_id**: integer </li> <li> **favorites**: <br> dict[ <ul> <li> *"lessons"*: list[`<lesson_id>` as *integer*] </li> <li> *"groups"*: list[`<group_id>` *as* integer] </li> </ul> ] </li> </ul> | Show favorite groups and lessons for the user `<id>` | 2+ |
+| PUT | `/users/<id>/favorites` | <ul> <li> **user_id**: integer </li> <li> **favorites**: <br>  dict[ <ul> <li> *"lessons"*: list[`<lesson_id>` *as* integer] </li> <li> *"groups"*: list[`<group_id>` *as* integer] </li> </ul> ] </li> </ul> | Update favorites groups and lessons for user `<id>` | 2+ |
 
 ## Clients, contracts and subscriptions
 
-| Methods | Endpoints | Description | Permissions level |
-| --- | --- | --- | :---: | 
-| GET | `/clients` | Request total list of clients <br> optional parameters: <ul> <li> **page** for paging the results with 20 items per page </li> <li> **sort** for sorting results with leading + or – for ascending or descenting order</li> </ul> |  | 
-| GET | `/clients/<id>` | Show client’s profile for client with ID equal to `<id>` |  | 
-| GET | `/clients/<id>/contracts` | Show all contracts of the client `<id>`
-| GET | `/clients/<id>/subscriptions` | Show all subscriptions of the client `<id>` | |
-| GET | `/contracts` | Show all contracts |  |
-| POST | `/contracts` | Add new contracts |  |
-| PUT | `/contracts/<id>` | Add new contracts |  |
-| GET | `/subscriptions` | Show all subscriptions |  |
-| POST | `/subscriptions` | Add new subscription |  |
-| PUT | `/subscriptions/<id>` | Edit subscription `<id>` |  |
+| Methods | Endpoints | JSON fields <br> * optional fields | Description | Permissions level |
+| --- | --- | --- | --- | :---: | 
+| GET | `/clients` || Request list of clients <br> optional parameters: <ul> <li> **page** for paging the results with 20 items per page </li> <li> **sort** for sorting results with leading `+` or `-` for ascending or descenting order</li> </ul> | 3+ | 
+| POST | `/clients` | <ul> <li> **name**: string </li> <li> **child_name**: string </li> <li> **address**: string </li> <li> **phone**: string </li> <li> **childs_birthday**: `YYYY-MM-DD`*as* string </li> <li> **contracts** *: list[`<contract_id>` *as* integer] </li> <li> **subscriptions** *: list[`<subscription_id>` *as* integer] </li> <li> **notes** *: string </li> </ul> | Add new client | 3+ |
+| GET | `/clients/<id>` || Show profile for client `<id>` | 3+ | 
+| GET | `/contracts` || Get list of contracts <br> optional parameters: <ul> <li> **client** -- client's `<id>`</li> <li> **date_from** -- filter out results older then given date </li> <li> **date_untill** -- filter out results newer then given date </li> <li> **page** -- paging results with 20 items per page </li> </ul> |  |
+| POST | `/contracts` | <ul> <li> **number** *: string </li> <li> **client_id**: integer </li> <li> **signed_on** *: `YYYY-MM-DD`*as* string </li> <li> **canceled_on** *: `YYYY-MM-DD`*as* string </li> </ul> | Add new contract | 3+ |
+| GET | `/contracts/<id>` || Get contract `<id>` | 3+ |
+| PUT | `/contracts/<id>` | <ul> <li> **active**: boolean </li> <li> **signed_on**: `YYYY-MM-DD`*as* string </li> <li> **canceled_on**: `YYYY-MM-DD`*as* string </li> </ul>  | Edit contract `<id>` | 3+ |
+| GET | `/subscriptions` || Show subscriptions <br> optional parameters: <ul> <li> **client_id** -- client's `<id>` </li> <li> **contract_id** -- contract's `<id>` </li>  <li> **date_from** -- filter out results older then given date </li> <li> **date_from** -- filter out results newer then given date </li> <li> **page** -- paging results with 20 items per page </li> </ul> | 3+ |
+| POST | `/subscriptions` | <ul> <li> **client_id**: integer </li> <li> **full_price_id**: integer </li> <li> **discount_percent** *: integer </li> </ul>  | Add new subscription | 3+ |
+| PUT | `/subscriptions/<id>` | <ul> <li> **end_date** *: `YYYY-MM-DD` *as* string </li> <li> **freezed**: bool </li> <li> **visits** *: list[`<visit_id>` *as* integer] </li> </ul>  | Edit subscription `<id>` | 3+ |
+<!-- | GET | `/clients/<id>/contracts` | Show all contracts of the client `<id>`
+| GET | `/clients/<id>/subscriptions` | Show all subscriptions of the client `<id>` | | -->
 
 ## Groups and lessons
 
